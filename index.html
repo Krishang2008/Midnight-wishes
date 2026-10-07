@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>A Midnight Surprise ✨</title>
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- Typography: Instrument Serif + Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body id="app-body">
+
+    <!-- Ambient Glow (Pinkish shade for receiver) -->
+    <div id="ambient-bg" class="ambient-glow"></div>
+
+    <!-- Star Shower Canvas for Photo Memories -->
+    <canvas id="star-canvas" class="star-canvas hidden"></canvas>
+
+    <!-- Falling Items Container (Balloons, Chocolates, Flowers) -->
+    <div id="falling-items-container" class="falling-container pointer-events-none"></div>
+
+    <!-- NAVIGATION -->
+    <header class="top-nav" id="main-nav">
+        <div class="logo">midnight<span>wishes</span></div>
+        <div id="nav-user-info" class="nav-user-info hidden">
+            <span id="nav-greeting">Welcome</span>
+            <button id="logout-btn" class="nav-link">Log out</button>
+        </div>
+    </header>
+
+    <!-- ================= 1. AUTH SCREEN ================= -->
+    <main id="auth-screen" class="view-screen active">
+        <div class="minimal-card auth-box">
+            <div class="tag">Surprise Studio</div>
+            <h1 class="serif-title">Curate a moment.</h1>
+            <p class="subtitle">Design a private, time-locked midnight reveal for the people you cherish.</p>
+
+            <div class="auth-tabs">
+                <button id="tab-login" class="tab-btn active">Log in</button>
+                <button id="tab-signup" class="tab-btn">Create account</button>
+            </div>
+
+            <form id="auth-form">
+                <div class="input-field">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Choose a username" required autocomplete="off" />
+                </div>
+                <div class="input-field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required />
+                </div>
+                <button type="submit" id="auth-submit-btn" class="btn btn-dark w-100">Continue →</button>
+            </form>
+        </div>
+        <footer class="creator-footer">
+            Created with <span class="heart">❤️</span> by <span class="creator-name">Krishang Mittal</span>
+        </footer>
+    </main>
+
+    <!-- ================= 2. BUILDER SCREEN ================= -->
+    <main id="builder-screen" class="view-screen hidden">
+        <div class="minimal-card builder-box">
+            <div class="tag">Workspace</div>
+            <h2 class="serif-title">Craft Here</h2>
+            <p class="subtitle">Set everything that you want here. 🔖</p>
+
+            <form id="surprise-form">
+                <div class="grid-2">
+                    <div class="input-field">
+                        <label>Birthday Person's Name</label>
+                        <input type="text" id="target-name" placeholder="Name" required />
+                    </div>
+                    <div class="input-field">
+                        <label>Nickname / Pet Name</label>
+                        <input type="text" id="target-nickname" placeholder="Nickname" required />
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="input-field">
+                        <label>Date of Birth</label>
+                        <input type="date" id="target-dob" required />
+                    </div>
+                    <div class="input-field">
+                        <label>Countdown Unlock Timestamp</label>
+                        <input type="datetime-local" id="target-boom-time" required />
+                    </div>
+                </div>
+
+                <!-- Custom Greeting Headline -->
+                <div class="input-field">
+                    <label>How would you like to wish them? (Headline)</label>
+                    <input type="text" id="custom-headline" placeholder="e.g. Happy Birthday to my favorite person,"
+                        required />
+                </div>
+
+                <!-- Custom Message Lines -->
+                <div class="input-field">
+                    <label>Under headline content</label>
+                    <input type="text" id="custom-midnight-sub"
+                        placeholder="e.g. Here's to celebrating everything you are." required />
+                </div>
+
+                <div class="input-field">
+                    <label>Final Closing Wish (Outro Card)</label>
+                    <textarea id="custom-final-wish" rows="2" placeholder="Write your heartfelt final note..."
+                        required></textarea>
+                </div>
+
+                <!-- Dynamic Memory Chapters -->
+                <div class="section-divider">
+                    <span>Add Cards</span>
+                </div>
+
+                <div id="memory-cards-container" class="cards-list">
+                    <!-- Dynamic Cards will be rendered here -->
+                </div>
+
+                <div class="add-memory-bar">
+                    <button type="button" id="add-memory-btn" class="btn btn-secondary">+ Add Another Card</button>
+                </div>
+
+                <button type="submit" class="btn btn-dark w-100">Generate Private Surprise Link ✦</button>
+            </form>
+
+            <!-- Share Box -->
+            <div id="share-modal" class="share-box hidden">
+                <h4>Link Ready to Send</h4>
+                <p>Deliver this link to them. It will remain locked until the exact moment.</p>
+                <div class="link-field">
+                    <input type="text" id="generated-link" readonly />
+                    <button id="copy-link-btn" class="btn btn-accent">Copy Link</button>
+                </div>
+            </div>
+        </div>
+        <footer class="creator-footer">
+            Created with <span class="heart">❤️</span> by <span class="creator-name">Krishang Mittal</span>
+        </footer>
+    </main>
+
+    <!-- ================= 3. RECEIVER EXPERIENCE ================= -->
+
+    <!-- A: Quiet Countdown -->
+    <main id="receiver-countdown" class="view-screen hidden">
+        <div class="minimal-card text-center countdown-card">
+            <div class="tag">Midnight Awaits</div>
+            <h1 class="serif-title display-title">Counting down for <span id="recv-name-1">you</span></h1>
+            <p class="subtitle">A little surprise is arriving for you.</p>
+
+            <div class="timer-flex">
+                <div class="t-block"><span id="t-hours">00</span><small>Hours</small></div>
+                <div class="t-dot">:</div>
+                <div class="t-block"><span id="t-mins">00</span><small>Mins</small></div>
+                <div class="t-dot">:</div>
+                <div class="t-block"><span id="t-secs">00</span><small>Secs</small></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- B: Midnight Popup Celebration -->
+    <div id="boom-modal" class="modal-backdrop hidden">
+        <div class="minimal-card modal-sheet text-center relative-box">
+            <div class="recipient-badge">For <span id="recv-name-badge"></span></div>
+            <div class="floating-icons">✨ 🎂 🎈</div>
+            <h1 id="recv-headline" class="serif-title modal-heading"></h1>
+            <p id="recv-midnight-sub" class="modal-p"></p>
+            <button id="boom-start-btn" class="btn btn-dark hidden fade-in">Continue</button>
+        </div>
+    </div>
+
+    <!-- C1: Cute Cat & Chocolate Interlude -->
+    <div id="cat-interlude-modal" class="modal-backdrop hidden">
+        <div class="minimal-card modal-sheet text-center cat-card">
+            <div class="cat-illustration-wrapper">
+                <img id="cat-img" src="./catchoco.jpeg" alt="Cute Kitten with Chocolate" class="cat-avatar" />
+            </div>
+            <h2 class="serif-title cat-title">A sweet treat for you...</h2>
+            <p class="cat-message">"Enjoy your day! Have some chocolate and endless smiles today." 🐾</p>
+            <button id="cat-continue-btn" class="btn btn-dark fade-in">Next Surprise 🌸</button>
+        </div>
+    </div>
+
+    <!-- C2: Cute Cat & Flowers Interlude -->
+    <div id="cat-flower-modal" class="modal-backdrop hidden">
+        <div class="minimal-card modal-sheet text-center cat-card">
+            <div class="cat-illustration-wrapper">
+                <img id="cat-flower-img" src="./cat flow.jpeg" alt="Cute Kitten with Flowers" class="cat-avatar" />
+            </div>
+            <h2 class="serif-title cat-title">Some fresh flowers for you...</h2>
+            <p class="cat-message">"Wishing you a day as lovely, fragrant, and bright as these blooms." 🌸</p>
+            <button id="cat-flower-continue-btn" class="btn btn-dark fade-in">Unwrap Memories 💖</button>
+        </div>
+    </div>
+
+    <!-- D: Sequential Memory Cards -->
+    <main id="receiver-slides" class="view-screen hidden">
+        <div class="minimal-card gallery-card text-center">
+            <div class="chapter-indicator">WHAT I BRING ! <span id="slide-num">1</span> of <span
+                    id="total-slides-num">1</span></div>
+            <div class="photo-frame">
+                <img id="active-slide-img" src="" alt="Memory Frame" />
+            </div>
+            <p id="active-slide-text" class="narrative-text"></p>
+            <button id="slide-next-btn" class="btn btn-dark hidden fade-in">Turn The Page →</button>
+        </div>
+    </main>
+
+    <!-- E: The Gift-Wrapped Outro -->
+    <div id="receiver-outro" class="modal-backdrop hidden">
+        <div class="minimal-card modal-sheet text-center outro-card">
+            <div class="wax-seal">💌</div>
+            <h2 id="recv-final-wish" class="outro-heading"></h2>
+            <p class="outro-wish">
+                Once again, a very Happy Birthday, my <span id="recv-nickname">Nickname ♥️</span>.
+            </p>
+            <div class="ribbon-footer">
+                <div class="ribbon-line"></div>
+                <span>sealed with all my love</span>
+                <div class="ribbon-line"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
